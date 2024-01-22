@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="10.24.11.16:2223" uploadOnCheckin="aec2d8cc-e99b-4662-9e93-b7d950fd0a1a" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+    <option name="confirmBeforeUploading" value="false" />
+    <serverData>
+      <paths name="10.24.11.16:2223">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/zhangjun/soCoM" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myUploadOnCheckinName" value="10.24.11.16:2223" />
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>

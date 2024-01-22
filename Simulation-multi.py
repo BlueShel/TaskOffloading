@@ -14,7 +14,7 @@ import random
 import simpy
 import xlwt
 import numpy as np
-import tensorflow as tf
+#import tensorflow as tf
 
 
 SIM_TIME = 150000
@@ -101,4 +101,4 @@ ql.update(RANDOM_SEED)
     
 
 SimulationM(RHO,ql,ql.name)
-tf.reset_default_graph()
+#tf.reset_default_graph()

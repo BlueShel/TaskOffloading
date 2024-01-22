@@ -1,15 +1,8 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jun 13 08:48:54 2019
-
-@author: song
-"""
-
 import soCoMM
-#from RL_brainDQN import DeepQNetwork as DQN
+from RL_brainDQN import DeepQNetwork as DQN
 #from RL_brainDouble import DoubleDQN as DQN
 #from RL_brainDueling import DuelingDQN as DQN
-from RL_brainPrioritizedReplay import DQNPrioritizedReplay as DQN
+#from RL_brainPrioritizedReplay import DQNPrioritizedReplay as DQN
 #from RL_brainPD import DQNPrioritizedReplay as DQN
 
 import simpy

@@ -1,17 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jun 13 08:40:16 2019
-
-@author: song
-"""
-"""
-soCoM system model with multiple servers, which is consist of job, user and mec server.
-
-Simulation based on SimPy:  https://simpy.readthedocs.io/en/latest/
-SimPy is a process-based discrete-event simulation framework based on standard Python.
-
-"""
-
 import random
 import numpy as np
 import matplotlib.pyplot as plt
