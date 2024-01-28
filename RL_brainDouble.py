@@ -54,13 +54,31 @@ class DoubleDQN(nn.Module):
         # Cost history
         self.cost_his = []
 
-    def choose_action(self, x):
-        x = torch.unsqueeze(torch.FloatTensor(x), 0)
-        if np.random.uniform() < self.epsilon:  # greedy
-            actions_value = self.eval_net.forward(x)
-            action = torch.max(actions_value, 1)[1].data.numpy()[0]
-        else:  # random
+    def choose_action(self, observation):
+        # 将观察值转换为 PyTorch 张量并添加批次维度
+        observation = torch.unsqueeze(torch.FloatTensor(observation), 0)
+
+        # 使用评估网络计算动作值
+        actions_value = self.eval_net.forward(observation)
+
+        # 将动作值转换为 numpy 数组，便于处理
+        actions_value_np = actions_value.detach().numpy()
+
+        # 更新动作值估计
+        if not hasattr(self, 'q'):
+            self.q = []
+            self.running_q = 0
+        self.running_q = self.running_q * 0.99 + 0.01 * np.max(actions_value_np)
+        self.q.append(self.running_q)
+
+        # Epsilon-贪婪策略
+        if np.random.uniform() < self.epsilon:
+            # 根据网络输出选择最佳动作
+            action = np.argmax(actions_value_np)
+        else:
+            # 选择随机动作
             action = np.random.randint(0, self.n_actions)
+
         return action
 
     def store_transition(self, s, a, r, s_):
@@ -72,36 +90,53 @@ class DoubleDQN(nn.Module):
         self.memory_counter += 1
 
     def learn(self):
+        # 检查是否需要替换目标网络的参数
         if self.learn_step_counter % self.replace_target_iter == 0:
             self.target_net.load_state_dict(self.eval_net.state_dict())
+            print('\ntarget_params_replaced\n')
 
-        sample_index = np.random.choice(self.memory_size, self.batch_size)
-        b_memory = self.memory[sample_index, :]
-        b_s = torch.FloatTensor(b_memory[:, :self.n_features])
-        b_a = torch.LongTensor(b_memory[:, self.n_features:self.n_features + 1].astype(int))
-        b_r = torch.FloatTensor(b_memory[:, self.n_features + 1:self.n_features + 2])
-        b_s_ = torch.FloatTensor(b_memory[:, -self.n_features:])
-
-        q_eval = self.eval_net(b_s).gather(1, b_a)
-        q_next = self.target_net(b_s_).detach()
-        q_eval_next = self.eval_net(b_s_)
-
-        # Double Q-learning logic
-        if self.double_q:
-            max_actions = q_eval_next.max(1)[1].view(self.batch_size, 1)
-            selected_q_next = q_next.gather(1, max_actions)
+        # 从记忆中随机抽取一批数据
+        if self.memory_counter > self.memory_size:
+            sample_index = np.random.choice(self.memory_size, size=self.batch_size)
         else:
-            selected_q_next = q_next.max(1)[0].view(self.batch_size, 1)
+            sample_index = np.random.choice(self.memory_counter, size=self.batch_size)
+        batch_memory = self.memory[sample_index, :]
 
-        q_target = b_r + self.gamma * selected_q_next
+        # 转换为 PyTorch 张量
+        b_s = torch.FloatTensor(batch_memory[:, :self.n_features])
+        b_a = torch.LongTensor(batch_memory[:, self.n_features:self.n_features + 1].astype(int))
+        b_r = torch.FloatTensor(batch_memory[:, self.n_features + 1:self.n_features + 2])
+        b_s_ = torch.FloatTensor(batch_memory[:, -self.n_features:])
 
-        loss = self.loss_func(q_eval, q_target)
+        # 获取下一个状态的 Q 值
+        q_next = self.target_net(b_s_).detach()  # 从图中分离出来，防止梯度回传
+        q_eval = self.eval_net(b_s)
 
+        # 使用双 DQN 选择动作
+        if self.double_q:
+            q_eval4next = self.eval_net(b_s_).detach()
+            max_act4next = q_eval4next.max(1)[1]
+            selected_q_next = q_next.gather(1, max_act4next.unsqueeze(1)).squeeze(1)
+        else:
+            selected_q_next = q_next.max(1)[0]
+
+        q_target = b_r.squeeze(1) + self.gamma * selected_q_next
+
+        # 获取与实际执行动作相对应的 Q 值
+        q_eval_wrt_a = q_eval.gather(1, b_a).squeeze(1)
+
+        # 计算损失
+        loss = self.loss_func(q_eval_wrt_a, q_target)
+
+        # 优化模型
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
 
+        # 记录成本
         self.cost_his.append(loss.item())
+
+        # 更新 epsilon
         self.epsilon = self.epsilon + self.epsilon_increment if self.epsilon < self.epsilon_max else self.epsilon_max
         self.learn_step_counter += 1
 

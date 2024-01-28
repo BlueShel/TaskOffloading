@@ -32,7 +32,7 @@ class Job(object):
         self.jobID = jobID     # 任务id
         self.jobTran = 0.0      # 任务传输时间
         self.jobDTran = 0.0     # 任务传输时间
-        self.jobRun = 0.0       # 任务计算时间
+        self.jobRun = 0.0       # 任务执行时间
         self.jobCPU = 0.0       # 任务计算时间
         self.jobCEnergy = 0.0   # 任务计算能耗
         self.jobLEnergy = 0.0       # 本地任务计算能耗
@@ -53,21 +53,21 @@ class Job(object):
 
 class User(object):
     def __init__(self, userID):
-        self.userID = userID
-        self.JOB_LIST = [] 
-        self.jobData = 0.0 
-        self.jobTrans = [20] 
-        self.jobRuns = [20] 
-        self.jobCPU = 0.1 
-        self.jobNums = 50 
-        self.jobCEnergy = [20] 
-        self.jobLEnergy = [20] 
+        self.userID = userID # 用户id
+        self.JOB_LIST = [] # 用户的任务列表
+        self.jobData = 0.0 # 任务数据量
+        self.jobTrans = [20] # 任务传输时间
+        self.jobRuns = [20] # 任务执行时间
+        self.jobCPU = 0.1 # 任务计算时间
+        self.jobNums = 50 # 任务数量
+        self.jobCEnergy = [20] # 任务计算能耗
+        self.jobLEnergy = [20] # 本地任务计算能耗
         ###############log###########
-        self.Throughout = 0.0 
-        self.CEnergy = 0.0 
-        self.LEnergy = 0.0 
-        self.commTotal = 0.0
-        self.Age = 0.0 
+        self.Throughout = 0.0 # 用户吞吐量
+        self.CEnergy = 0.0 # 用户计算能耗
+        self.LEnergy = 0.0 # 用户本地计算能耗
+        self.commTotal = 0.0 # 用户传输时间
+        self.Age = 0.0 # 用户时延
        
     
      ##############################################################
@@ -216,12 +216,12 @@ class MEC(object):
             comm = 0.0
             energy = 0.0
             sumreward = self.REWARD
-            ucout = len(self.USER_LIST)
+            ucout = len(self.USER_LIST) # 用户数量
             for u in self.USER_LIST:
                 throu += float(u.Throughout)
-            age = self.Age/ucout/1000
-            run = self.Run/ucout
-            throu = throu/ucout
+            age = self.Age/ucout/1000   # 平均时延
+            run = self.Run/ucout    # 平均计算时间
+            throu = throu/ucout # 平均吞吐量
             comm = self.commTime/ucout/1000
             energy = self.commEnergy/ucout
             sumreward = self.REWARD
