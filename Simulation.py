@@ -70,7 +70,7 @@ def Simulation(rho, name, function):
         env.process(mec.offloadSe(env, WAITING_LEN))
 
     # 进程用于记录日志
-    env.process(mec.writelog(env, name, 'rho', int(mec.RHO)))
+    env.process(mec.writelog(env, name, 'rho',  int(mec.RHO)))
 
     # 运行模拟直到设定的模拟时间
     env.run(until=SIM_TIME)

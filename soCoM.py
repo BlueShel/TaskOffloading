@@ -23,6 +23,7 @@ random.seed(40)
 # 定义用户数量和通道带宽分配因子
 UN = 5 #Numbers of user equipment
 CD = 2 #channel bandwidth allocation factor
+CR = 1 # 压缩率
 
 class Job(object):
     # 任务类，表示单个工作任务
@@ -48,7 +49,7 @@ class Job(object):
         self.jobOffload = 0.0 
         self.jobRT =0.0
         self.jobTT = 0.0
-        self.jobAge = 0.0 
+        self.jobAge = 0.0 # 任务时延
    
 
 class User(object):
@@ -67,14 +68,14 @@ class User(object):
         self.CEnergy = 0.0 # 用户计算能耗
         self.LEnergy = 0.0 # 用户本地计算能耗
         self.commTotal = 0.0 # 用户传输时间
-        self.Age = 0.0 # 用户时延
+        self.Age = 0.0 # 多MEC情况下的用户时延
        
     
      ##############################################################
      # 设置用户的任务参数，包括任务数量、数据量、计算量、传输时间、计算能耗等
     def usersetting(self):
         self.jobNums = 10
-        self.jobData = (UN-self.userID)*64
+        self.jobData = (UN-self.userID)*64*CR
         self.jobRuns = [(self.userID+1)*25*i for i in range(1,5)]
         self.jobCPU = 0.1
         self.jobLEnergy = [(self.userID+1)*1.25*i for i in range(7,25)]
@@ -190,7 +191,7 @@ class MEC(object):
         self.ACTION = 0 
         self.SCORE = 0.0 
         ####################log################
-        self.offloadJob = [] 
+        self.offloadJob = []    # 卸载任务列表
         self.Age = 0.0
         self.commTime = 0.0
         self.commEnergy = 0.0
@@ -388,7 +389,7 @@ class MEC(object):
                     self.Run += self.USER_LIST[userID].JOB_LIST[jobID].jobRun
                     self.commTime += self.USER_LIST[userID].JOB_LIST[jobID].jobTT
                     ###################################REWARD######################################
-                    self.SCORE = self.USER_LIST[userID].JOB_LIST[jobID].jobRun/self.USER_LIST[userID].JOB_LIST[jobID].jobCEnergy
+                    self.SCORE = self.USER_LIST[userID].JOB_LIST[jobID].jobRun/self.USER_LIST[userID].JOB_LIST[jobID].jobCEnergy    # 任务的运行时间/任务的计算能耗，用来评估任务的效率
                     self.REWARD += self.SCORE
                     #################################################################################
             self.JOB_POOL = jobpool

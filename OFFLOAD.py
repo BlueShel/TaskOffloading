@@ -17,9 +17,9 @@ When using different DQN algorithms, different packages need to be imported.
 import soCoM
 
 # 强化学习算法的导入选项，可以根据需要选择不同的算法
-#from RL_brainDQN import DeepQNetwork as DQN
+from RL_brainDQN import DeepQNetwork as DQN
 #from RL_brainDouble import DoubleDQN as DQN
-from RL_brainDueling import DuelingDQN as DQN
+#from RL_brainDueling import DuelingDQN as DQN
 #from RL_brainPrioritizedReplay import DQNPrioritizedReplay as DQN
 
 import simpy

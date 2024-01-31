@@ -10,7 +10,7 @@ torch.manual_seed(1)
 
 class DuelingDQN(nn.Module):
     def __init__(self, n_actions, n_features, learning_rate=0.01, reward_decay=0.9,
-                 e_greedy=0.9, replace_target_iter=100, memory_size=500,
+                 e_greedy=0.9, replace_target_iter=200, memory_size=500,
                  batch_size=32, e_greedy_increment=None):
         super(DuelingDQN, self).__init__()
         self.n_actions = n_actions
